@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vista previa · Infografía radial</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f7f4f1; color: #292827; }
+    main { width: min(1200px, calc(100% - 32px)); margin: 0 auto; padding: 36px 0 48px; }
+    h1 { margin: 0; font-size: clamp(28px, 4vw, 46px); letter-spacing: -0.04em; }
+    .lead { color: #726b67; margin: 8px 0 28px; }
+    .card { background: #fff; border: 1px solid #e7dfda; border-radius: 24px; box-shadow: 0 14px 40px rgba(69, 51, 43, .07); }
+    .hero { padding: 18px; display: grid; place-items: center; min-height: 650px; }
+    #radial { width: min(650px, 95%); aspect-ratio: 1; }
+    .legend { display: flex; gap: 24px; justify-content: center; color: #625c58; font-size: 14px; }
+    .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 7px; background: var(--color); }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 20px; }
+    .small { padding: 24px; min-height: 330px; }
+    h2 { margin: 0 0 20px; font-size: 19px; }
+    svg { width: 100%; height: auto; overflow: visible; }
+    .axis { stroke: #e9e2de; stroke-width: 1; }
+    .label { fill: #77706c; font-size: 12px; }
+    @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } .hero { min-height: 460px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Infografía Radial en Streamlit</h1>
+    <p class="lead">Representación visual aproximada del dashboard corregido.</p>
+    <section class="card hero">
+      <svg id="radial" viewBox="0 0 640 640" aria-label="Gráfico de dos anillos radiales"></svg>
+      <div class="legend">
+        <span style="--color:#d4847c">Métrica principal</span>
+        <span style="--color:#9cb5bd">Métrica secundaria</span>
+      </div>
+    </section>
+    <section class="grid">
+      <article class="card small">
+        <h2>Categorías principales</h2>
+        <svg viewBox="0 0 520 240" aria-label="Gráfico de burbujas">
+          <line class="axis" x1="30" y1="190" x2="490" y2="190" />
+          <g fill="#d4847c" fill-opacity=".82">
+            <circle cx="75" cy="145" r="24"/><circle cx="170" cy="100" r="35"/>
+            <circle cx="265" cy="132" r="29"/><circle cx="360" cy="74" r="43"/>
+            <circle cx="455" cy="116" r="32"/>
+          </g>
+          <g class="label" text-anchor="middle">
+            <text x="75" y="220">Cat A</text><text x="170" y="220">Cat B</text>
+            <text x="265" y="220">Cat C</text><text x="360" y="220">Cat D</text>
+            <text x="455" y="220">Cat E</text>
+          </g>
+        </svg>
+      </article>
+      <article class="card small">
+        <h2>Evolución acumulada</h2>
+        <svg viewBox="0 0 520 240" aria-label="Gráfico de áreas acumuladas">
+          <line class="axis" x1="35" y1="195" x2="490" y2="195" />
+          <path d="M35 170 L145 145 L255 112 L365 74 L485 28 L485 195 L35 195 Z" fill="#8c8c8c" fill-opacity=".38"/>
+          <path d="M35 181 L145 162 L255 137 L365 109 L485 70 L485 195 L35 195 Z" fill="#b8746d" fill-opacity=".55"/>
+          <g class="label" text-anchor="middle">
+            <text x="35" y="220">Ene</text><text x="145" y="220">Feb</text><text x="255" y="220">Mar</text>
+            <text x="365" y="220">Abr</text><text x="485" y="220">May</text>
+          </g>
+        </svg>
+      </article>
+    </section>
+  </main>
+  <script>
+    const svg = document.querySelector("#radial");
+    const ns = "http://www.w3.org/2000/svg";
+    const random = (index, offset, range) => offset + ((index * 47 + 19) % range);
+    for (let index = 0; index < 100; index += 1) {
+      const angle = (index / 100) * Math.PI * 2 - Math.PI / 2;
+      const outerStart = 150;
+      const outerEnd = outerStart + random(index, 48, 115);
+      const innerStart = 72;
+      const innerEnd = innerStart + random(index, 24, 48);
+      [[outerStart, outerEnd, "#d4847c", 2.65], [innerStart, innerEnd, "#9cb5bd", 2.65]].forEach(([start, end, color, width]) => {
+        const line = document.createElementNS(ns, "line");
+        line.setAttribute("x1", 320 + Math.cos(angle) * start);
+        line.setAttribute("y1", 320 + Math.sin(angle) * start);
+        line.setAttribute("x2", 320 + Math.cos(angle) * end);
+        line.setAttribute("y2", 320 + Math.sin(angle) * end);
+        line.setAttribute("stroke", color);
+        line.setAttribute("stroke-width", width);
+        line.setAttribute("stroke-linecap", "round");
+        svg.appendChild(line);
+      });
+    }
+    const center = document.createElementNS(ns, "circle");
+    center.setAttribute("cx", "320"); center.setAttribute("cy", "320"); center.setAttribute("r", "52");
+    center.setAttribute("fill", "#fff"); center.setAttribute("stroke", "#eee6e1");
+    svg.appendChild(center);
+  </script>
+</body>
+</html>

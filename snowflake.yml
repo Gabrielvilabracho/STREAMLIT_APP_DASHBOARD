@@ -1,0 +1,46 @@
+definition_version: 2
+
+env:
+  warehouse: STREAMLIT_APP_WH
+
+entities:
+  dashboard:
+    type: streamlit
+    identifier: STREAMLIT_APP_DASHBOARD
+    main_file: app.py
+    query_warehouse: <% ctx.env.warehouse %>
+    artifacts:
+      - app.py
+      - chart_display.py
+      - environment.yml
+
+  dashboard_package:
+    type: application package
+    identifier: STREAMLIT_DASHBOARD_PKG
+    manifest: native_app/manifest.yml
+    stage: app_src.stage
+    distribution: internal
+    artifacts:
+      - src: native_app/manifest.yml
+        dest: manifest.yml
+      - src: native_app/setup.sql
+        dest: setup.sql
+      - src: native_app/README.md
+        dest: README.md
+      - src: app.py
+        dest: streamlit/app.py
+      - src: chart_display.py
+        dest: streamlit/chart_display.py
+      - src: environment.yml
+        dest: streamlit/environment.yml
+    meta:
+      warehouse: <% ctx.env.warehouse %>
+
+  dashboard_app:
+    type: application
+    identifier: STREAMLIT_DASHBOARD_APP
+    from:
+      target: dashboard_package
+    debug: false
+    meta:
+      warehouse: <% ctx.env.warehouse %>
